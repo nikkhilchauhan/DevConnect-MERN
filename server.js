@@ -25,7 +25,14 @@ app.listen(PORT, () => {
   console.log('Server running on -> http://localhost:8000/');
 });
 
-// Routes
+// Init Middlewares
+app.use(express.json({ extended: false }));
+
+// Define Routes
+app.use('/api/users', require('./routes/api/users'));
+app.use('/api/profile', require('./routes/api/profile'));
+app.use('/api/posts', require('./routes/api/posts'));
+app.use('/api/auth', require('./routes/api/auth'));
 app.get('/', (req, res) => {
-  res.send("You're genius");
+  res.send("You're genius...");
 });
