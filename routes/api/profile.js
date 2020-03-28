@@ -7,6 +7,8 @@ const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
 
+// @Note: write inside tryCatch if you are talking to database/server
+
 // @route GET api/profile/me
 // @desc Get current user profile
 // @access Private
@@ -189,6 +191,7 @@ router.put(
     try {
       // get profile by user id
       const profile = await Profile.findOne({ user: req.user.id });
+      // unshift adds newExp to the begnning
       profile.experience.unshift(newExp);
       await profile.save();
       res.json(profile);

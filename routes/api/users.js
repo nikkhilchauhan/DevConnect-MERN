@@ -45,6 +45,7 @@ router.post(
         r: 'pg',
         d: 'mm'
       });
+      // @Note: we only use 'new' keyword if only it's a actual collection in databse/new model
       //   Creating instance of user
       user = new User({
         name,
