@@ -15,8 +15,9 @@ const Profile = require('../../models/Profile');
 router.get('/me', auth, async (req, res) => {
   try {
     // user has all informations about him
+    // @Note: 'populate' is used to get element from another database
     const profile = await Profile.findOne({
-      user: req.user.id
+      user: req.user.id,
     }).populate('User', ['name', 'avatar']);
     if (!profile) {
       return res
@@ -38,13 +39,9 @@ router.post(
   [
     auth,
     [
-      check('status', 'Status is required!')
-        .not()
-        .isEmpty(),
-      check('skills', 'Skills is required!')
-        .not()
-        .isEmpty()
-    ]
+      check('status', 'Status is required!').not().isEmpty(),
+      check('skills', 'Skills is required!').not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -120,7 +117,7 @@ router.get('/', async (req, res) => {
 router.get('/user/:user_id', async (req, res) => {
   try {
     const profile = await Profile.findOne({
-      user: req.params.user_id
+      user: req.params.user_id,
     }).populate('user', ['name', 'avatar']);
     if (!profile)
       return res.status(400).json({ msg: 'No profile for this user!' });
@@ -160,22 +157,16 @@ router.put(
   [
     auth,
     [
-      check('title', 'Title is required!')
-        .not()
-        .isEmpty(),
-      check('company', 'Company is required!')
-        .not()
-        .isEmpty(),
-      check('from', 'From-date is required!')
-        .not()
-        .isEmpty()
-    ]
+      check('title', 'Title is required!').not().isEmpty(),
+      check('company', 'Company is required!').not().isEmpty(),
+      check('from', 'From-date is required!').not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        error: errors.array()
+        error: errors.array(),
       });
     }
     // Object
@@ -186,7 +177,7 @@ router.put(
       from: req.body.from,
       to: req.body.to,
       current: req.body.current,
-      description: req.body.description
+      description: req.body.description,
     };
     try {
       // get profile by user id
@@ -211,7 +202,7 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
     const profile = await Profile.findOne({ user: req.user.id });
     // Get remove index
     const removeIndex = profile.experience
-      .map(item => {
+      .map((item) => {
         item.id;
       })
       .indexOf(req.params.exp_id);
@@ -232,25 +223,17 @@ router.put(
   [
     auth,
     [
-      check('school', 'School is required!')
-        .not()
-        .isEmpty(),
-      check('degree', 'Degree is required!')
-        .not()
-        .isEmpty(),
-      check('fieldofstudy', 'Field-of-study is required!')
-        .not()
-        .isEmpty(),
-      check('from', 'From-date is required!')
-        .not()
-        .isEmpty()
-    ]
+      check('school', 'School is required!').not().isEmpty(),
+      check('degree', 'Degree is required!').not().isEmpty(),
+      check('fieldofstudy', 'Field-of-study is required!').not().isEmpty(),
+      check('from', 'From-date is required!').not().isEmpty(),
+    ],
   ],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
-        error: errors.array()
+        error: errors.array(),
       });
     }
     // Object
@@ -261,7 +244,7 @@ router.put(
       from: req.body.from,
       to: req.body.to,
       current: req.body.current,
-      description: req.body.description
+      description: req.body.description,
     };
     try {
       // get profile by user id
@@ -285,7 +268,7 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
     const profile = await Profile.findOne({ user: req.user.id });
     // Get remove index
     const removeIndex = profile.education
-      .map(item => {
+      .map((item) => {
         item.id;
       })
       .indexOf(req.params.edu_id);
@@ -306,7 +289,7 @@ router.get('/github/:username', (req, res) => {
     const options = {
       uri: `https://api.github.com/users/${req.params.username}/repos?per_page=5&sort=created:asc&client_id=${process.env.GITHUBCLIENTID}&client_secret=${process.env.GITHUBSECRET}`,
       method: 'GET',
-      headers: { 'user-agent': 'node.js' }
+      headers: { 'user-agent': 'node.js' },
     };
     request(options, (error, response, body) => {
       if (error) {
