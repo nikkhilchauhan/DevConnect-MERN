@@ -3,7 +3,6 @@ const router = express.Router();
 const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
 const User = require('../../models/User');
-const Profile = require('../../models/Profile');
 const Post = require('../../models/Post');
 
 // @route POST api/posts
@@ -11,27 +10,20 @@ const Post = require('../../models/Post');
 // @access Private
 router.post(
   '/',
-  [
-    auth,
-    [
-      check('text', 'Text is required!')
-        .not()
-        .isEmpty()
-    ]
-  ],
+  [auth, [check('text', 'Text is required!').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-      // because expect from text everything will come from database
       const user = await User.findById(req.user.id).select('-password');
+      // because expect from text everything will come from database
       const newPost = new Post({
         text: req.body.text,
         user: req.user.id,
         name: user.name,
-        avatar: user.avatar
+        avatar: user.avatar,
       });
       const post = await newPost.save();
       res.json(post);
@@ -89,7 +81,7 @@ router.delete('/:id', auth, async (req, res) => {
     // Check if user owns that post
     if (post.user.toString() !== req.user.id) {
       return res.status(401).json({
-        msg: 'User not autherized to this post, it belogs to another user!'
+        msg: 'User not autherized to this post, it belogs to another user!',
       });
     }
 
@@ -110,7 +102,8 @@ router.put('/like/:id', auth, async (req, res) => {
 
     // Check if post is already liked
     if (
-      post.likes.filter(like => like.user.toString() === req.user.id).length > 0
+      post.likes.filter((like) => like.user.toString() === req.user.id).length >
+      0
     ) {
       return res.status(400).json({ msg: 'Post already liked' });
     }
@@ -132,14 +125,14 @@ router.put('/unlike/:id', auth, async (req, res) => {
 
     // Check if post is already liked
     if (
-      post.likes.filter(like => like.user.toString() === req.user.id).length ===
-      0
+      post.likes.filter((like) => like.user.toString() === req.user.id)
+        .length === 0
     ) {
       return res.status(400).json({ msg: "Post has't yet been liked yet!" });
     }
     // Get the remove index
     const removeIndex = post.likes
-      .map(like => like.user.toString())
+      .map((like) => like.user.toString())
       .indexOf(req.user.id);
 
     post.likes.splice(removeIndex, 1);
@@ -156,14 +149,7 @@ router.put('/unlike/:id', auth, async (req, res) => {
 // @access Private
 router.post(
   '/comment/:id',
-  [
-    auth,
-    [
-      check('text', 'Text is required!')
-        .not()
-        .isEmpty()
-    ]
-  ],
+  [auth, [check('text', 'Text is required!').not().isEmpty()]],
   async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -177,7 +163,7 @@ router.post(
         text: req.body.text,
         user: req.user.id,
         name: user.name,
-        avatar: user.avatar
+        avatar: user.avatar,
       };
       post.comments.unshift(newComment);
       await post.save();
@@ -198,7 +184,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     const post = await Post.findById(req.params.id);
     // Pull out comment from post
     const comment = post.comments.find(
-      comment => comment.id === req.params.comment_id
+      (comment) => comment.id === req.params.comment_id
     );
     // Make sure comment exists
     if (!comment) {
@@ -210,7 +196,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     }
     // Get remove index
     const removeIndex = post.comments
-      .map(comment => comment.user.toString())
+      .map((comment) => comment.user.toString())
       .indexOf(req.user.id);
 
     post.comments.splice(removeIndex, 1);
