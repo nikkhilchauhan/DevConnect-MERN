@@ -13,14 +13,12 @@ const User = require('../../models/User');
 router.post(
   '/',
   [
-    check('name', 'Name is requires!')
-      .not()
-      .isEmpty(),
+    check('name', 'Name is required!').not().isEmpty(),
     check('email', 'Please include a valid email address!').isEmail(),
     check(
       'password',
-      'Please enter a password with or more characters!'
-    ).isLength({ min: 6 })
+      'Please enter a password with 6 or more characters!'
+    ).isLength({ min: 6 }),
   ],
   async (req, res) => {
     // console.log(req.body);
@@ -43,7 +41,7 @@ router.post(
       const avatar = gravatar.url(email, {
         s: '200',
         r: 'pg',
-        d: 'mm'
+        d: 'mm',
       });
       // @Note: we only use 'new' keyword if only it's a actual collection in databse/new model
       //   Creating instance of user
@@ -51,7 +49,7 @@ router.post(
         name,
         email,
         password,
-        avatar
+        avatar,
       });
       // Encrypt password
       const salt = await bcrypt.genSalt(10);
@@ -60,8 +58,8 @@ router.post(
       // Return jsonwebtoken
       const payload = {
         user: {
-          id: user._id
-        }
+          id: user._id,
+        },
       };
       //   @Note: jwt token has user.id in token, test it at www.jwt.to
       jwt.sign(

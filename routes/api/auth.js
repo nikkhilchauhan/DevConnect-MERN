@@ -28,13 +28,13 @@ router.post(
   '/',
   [
     check('email', 'Please include a valid email address!').isEmail(),
-    check('password', 'Password is required!').exists()
+    check('password', 'Password is required!').exists(),
   ],
   async (req, res) => {
     // console.log(req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ erros: errors.array() });
+      return res.status(400).json({ error: errors.array() });
     }
 
     const { email, password } = req.body;
@@ -57,8 +57,8 @@ router.post(
       // Return jsonwebtoken
       const payload = {
         user: {
-          id: user._id
-        }
+          id: user._id,
+        },
       };
       //   @Note: jwt token has user.id in token, test it at www.jwt.to
       jwt.sign(
