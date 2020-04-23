@@ -7,7 +7,7 @@ const auth = (req, res, next) => {
 
   // Check if token is available
   if (!token) {
-    return res.status(401).json({ msg: 'Not token, authorization denied!' });
+    return res.status(401).json({ msg: 'No token, authorization denied!' });
   }
   // Verify token
   try {
