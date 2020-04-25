@@ -123,7 +123,7 @@ router.put('/unlike/:id', auth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
 
-    // Check if post is already liked
+    // Check if post is liked
     if (
       post.likes.filter((like) => like.user.toString() === req.user.id)
         .length === 0
@@ -190,7 +190,7 @@ router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
     if (!comment) {
       return res.status(404).json({ msg: "Comment does't exists!" });
     }
-    // Check user if
+    // Check user if user owns that comment
     if (comment.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized!' });
     }

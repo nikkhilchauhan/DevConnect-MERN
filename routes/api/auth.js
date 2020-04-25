@@ -4,25 +4,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/User');
 const { check, validationResult } = require('express-validator');
-
 const auth = require('../../middleware/auth');
 
-// @route GET api/users
-// @desc
-// @access Public
-router.get('/', auth, async (req, res) => {
-  try {
-    // @Note: -password means it don't send back password
-    const user = await User.findById(req.user.id).select('-password');
-    res.json(user);
-  } catch (err) {
-    Console.error(err.message);
-    res.status(500).send('Server error!');
-  }
-});
-
 // @route POST api/auth
-// @desc Authenticate user & get token
+// @desc Login user & get token
 // @access Public
 router.post(
   '/',
@@ -42,12 +27,13 @@ router.post(
     try {
       // See if user exits
       let user = await User.findOne({ email: email });
+      // In case no user found
       if (!user) {
         return res
           .status(400)
           .json({ errors: [{ msg: 'Invalid credentials!' }] });
       }
-      // Verify password
+      // Verify password if user exists
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         return res
@@ -60,7 +46,7 @@ router.post(
           id: user._id,
         },
       };
-      //   @Note: jwt token has user.id in token, test it at www.jwt.to
+      // @Note: jwt token has _id=user.id in token, test it at www.jwt.to
       jwt.sign(
         payload,
         process.env.SECRET,
@@ -76,5 +62,20 @@ router.post(
     }
   }
 );
+
+// @route GET api/auth
+// @desc get current user by x-auth-token
+// @access Private
+router.get('/', auth, async (req, res) => {
+  try {
+    // @Note: -password means it don't send back password
+    // @Note: req.user is coming from auth middleware
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
+  } catch (err) {
+    Console.error(err.message);
+    res.status(500).send('Server error!');
+  }
+});
 
 module.exports = router;
