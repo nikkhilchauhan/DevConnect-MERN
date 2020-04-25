@@ -8,12 +8,12 @@ mongoose
   .connect(process.env.DATABASE, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex: true
+    useCreateIndex: true,
   })
   .then(() => {
     console.log('MongoDB is Connected');
   })
-  .catch(error => {
+  .catch((error) => {
     console.log(error);
     // Exit process with failure
     process.exit(1);
@@ -33,6 +33,3 @@ app.use('/api/users', require('./routes/api/users'));
 app.use('/api/profile', require('./routes/api/profile'));
 app.use('/api/posts', require('./routes/api/posts'));
 app.use('/api/auth', require('./routes/api/auth'));
-app.get('/', (req, res) => {
-  res.send("You're genius...");
-});

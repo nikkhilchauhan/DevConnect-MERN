@@ -6,19 +6,19 @@ const { check, validationResult } = require('express-validator');
 const auth = require('../../middleware/auth');
 const User = require('../../models/User');
 const Profile = require('../../models/Profile');
+const Post = require('../../models/Post');
 
 // @Note: write inside tryCatch if you are talking to database/server
 
 // @route GET api/profile/me
-// @desc Get current user profile
+// @desc Get current user profile by authToken
 // @access Private
 router.get('/me', auth, async (req, res) => {
   try {
-    // user has all informations about him
     // @Note: 'populate' is used to get element from another database
     const profile = await Profile.findOne({
       user: req.user.id,
-    }).populate('User', ['name', 'avatar']);
+    }).populate('user', ['name', 'avatar']);
     if (!profile) {
       return res
         .status(400)
@@ -49,10 +49,11 @@ router.post(
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // Build profile object
+    // Build Profile object
     const profileFields = {};
+
     profileFields.user = req.user.id;
-    // if (req.body.handle) profileFields.handle = req.body.handle;
+    if (req.body.handle) profileFields.handle = req.body.handle;
     if (req.body.company) profileFields.company = req.body.company;
     if (req.body.website) profileFields.website = req.body.website;
     if (req.body.location) profileFields.location = req.body.location;
@@ -65,8 +66,9 @@ router.post(
       profileFields.skills = req.body.skills.split(',');
     }
 
-    // Build social object
+    // Build Social object from profileFields object
     profileFields.social = {};
+
     if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
     if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
     if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
@@ -76,16 +78,16 @@ router.post(
     try {
       let profile = await Profile.findOne({ user: req.user.id });
 
+      // If profile already exits then Update profile
       if (profile) {
-        // Update
         profile = await Profile.findOneAndUpdate(
           { user: req.user.id },
-          { $set: profileFields },
+          { $set: profileFields }, // $set is used to update existing value on database
           { new: true }
         );
         return res.json(profile);
       }
-      // Create
+      // If profile does't exits then Create profile
       profile = new Profile(profileFields);
       await profile.save();
       res.json(profile);
@@ -93,8 +95,6 @@ router.post(
       console.error(err.message);
       res.status(500).send('Server error!');
     }
-
-    // res.send('Say..Hello...');
   }
 );
 
@@ -137,12 +137,14 @@ router.get('/user/:user_id', async (req, res) => {
 // @access Private
 router.delete('/', auth, async (req, res) => {
   try {
-    // Todo : Remove users posts
+    // Todo : Remove user's posts
     // Remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
+    // Remove posts
+    await Post.findOneAndRemove({ user: req.user.id });
     // Remove user
     await User.findOneAndRemove({ _id: req.user.id });
-    res.json({ msg: 'User deleted' });
+    res.json({ msg: 'User deleted successfully' });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error!');
@@ -169,7 +171,7 @@ router.put(
         error: errors.array(),
       });
     }
-    // Object
+    // newExp Object
     const newExp = {
       title: req.body.title,
       company: req.body.company,
