@@ -9,12 +9,14 @@ import Dashboard from './components/dashboard/Dashboard';
 import PrivateRoute from './components/routing/PrivateRoute';
 import './App.css';
 
+// setAuthToken sets to send 'x-auth-token' by default  into axios headers if token exists
 if (localStorage.token) {
   setAuthToken(localStorage.token);
 }
 
 const App = () => {
   useEffect(() => {
+    // Loads current user by sending 'x-auth-token' to endpoint if token exists in localStorage
     store.dispatch(loadUser());
   }, []);
   return (

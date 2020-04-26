@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
 
 const PrivateRoute = ({
-  component: Component,
+  component: Component, // (DESTRUCRING) What prop is coming: What you want to call
   auth: { isAuthenticated, loading },
   ...rest
 }) => (

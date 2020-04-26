@@ -12,8 +12,10 @@ import {
 
 import setAuthToken from '../utils/setAuthToken';
 
-// Load user
+// LOAD USER
+// Load current user by sending 'x-auth-token' to endpoint if token exists in localStorage
 export const loadUser = () => async (dispatch) => {
+  // setAuthToken sets to send 'x-auth-token' by default  into axios headers if token exists
   if (localStorage.token) {
     setAuthToken(localStorage.token);
   }
@@ -23,7 +25,6 @@ export const loadUser = () => async (dispatch) => {
       type: USER_LOADED,
       payload: res.data,
     });
-    // dispatch(loadUser());
   } catch (err) {
     dispatch({
       type: AUTH_ERROR,
@@ -85,7 +86,7 @@ export const login = (email, password) => async (dispatch) => {
   }
 };
 
-// LOGOUT user
+// LOGOUT USER
 export const logout = () => (dispatch) => {
   dispatch({ type: LOGOUT });
 };
