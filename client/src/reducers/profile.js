@@ -1,4 +1,12 @@
-import { GET_PROFILE, PROFILE_ERROR, CLEAR_PROFILE } from '../actions/types';
+import {
+  GET_PROFILE,
+  PROFILE_ERROR,
+  CLEAR_PROFILE,
+  ADD_EXP,
+  DELETE_EXP,
+  ADD_EDU,
+  DELETE_EDU,
+} from '../actions/types';
 
 const intialState = {
   profile: null, // current user profile
@@ -10,6 +18,10 @@ export default function (state = intialState, action) {
   const { type, payload } = action;
   switch (type) {
     case GET_PROFILE:
+    case ADD_EXP:
+    case ADD_EDU:
+    case DELETE_EXP:
+    case DELETE_EDU:
       return {
         ...state,
         profile: payload,

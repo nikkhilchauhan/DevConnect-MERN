@@ -61,10 +61,17 @@ router.post(
     if (req.body.status) profileFields.status = req.body.status;
     if (req.body.githubusername)
       profileFields.githubusername = req.body.githubusername;
+
     // Skills - Spilt into array
-    if (typeof req.body.skills !== 'undefined') {
-      profileFields.skills = req.body.skills.split(',');
+    if (req.body.skills) {
+      profileFields.skills = req.body.skills
+        .split(',')
+        .map((skill) => skill.trim());
     }
+
+    // if (typeof req.body.skills !== 'undefined') {
+    //   profileFields.skills = req.body.skills.split(',');
+    // }
 
     // Build Social object from profileFields object
     profileFields.social = {};
@@ -137,11 +144,10 @@ router.get('/user/:user_id', async (req, res) => {
 // @access Private
 router.delete('/', auth, async (req, res) => {
   try {
-    // Todo : Remove user's posts
+    // Remove posts
+    await Post.deleteMany({ user: req.user.id });
     // Remove profile
     await Profile.findOneAndRemove({ user: req.user.id });
-    // Remove posts
-    await Post.findOneAndRemove({ user: req.user.id });
     // Remove user
     await User.findOneAndRemove({ _id: req.user.id });
     res.json({ msg: 'User deleted successfully' });

@@ -1,14 +1,24 @@
 import React, { useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import Moment from 'react-moment';
 import { connect } from 'react-redux';
 import Spinner from '../layout/Spinner';
-import { getCurrentProfile } from '../../actions/profile';
+import {
+  getCurrentProfile,
+  deleteExperience,
+  deleteEducation,
+  deleteProfile,
+} from '../../actions/profile';
+import DashboardActions from './DashboardActions';
 
 const Dashboard = ({
   auth: { user },
   profile: { profile, loading },
   getCurrentProfile,
+  deleteExperience,
+  deleteEducation,
+  deleteProfile,
 }) => {
   useEffect(() => {
     document.title = 'Devconnect | Dashboard';
@@ -25,19 +35,7 @@ const Dashboard = ({
       </p>
       {profile !== null ? (
         <Fragment>
-          <div className='dash-buttons'>
-            <a href='edit-profile.html' className='btn btn-light'>
-              <i className='fas fa-user-circle text-primary'></i> Edit Profile
-            </a>
-            <a href='add-experience.html' className='btn btn-light'>
-              <i className='fab fa-black-tie text-primary'></i> Add Experience
-            </a>
-            <a href='add-education.html' className='btn btn-light'>
-              <i className='fas fa-graduation-cap text-primary'></i> Add
-              Education
-            </a>
-          </div>
-
+          <DashboardActions />
           <h2 className='my-2'>Experience Credentials</h2>
           <table className='table'>
             <thead>
@@ -50,14 +48,21 @@ const Dashboard = ({
             </thead>
             <tbody>
               {profile.experience &&
-                profile.experience.map((exp, index) => {
+                profile.experience.map((exp) => {
                   return (
-                    <tr>
+                    <tr key={exp._id}>
                       <td>{exp.company}</td>
                       <td className='hide-sm'>{exp.title}</td>
-                      <td className='hide-sm'>{exp.from}</td>
+                      <td className='hide-sm'>
+                        <Moment format='YYYY/MM/DD'>{exp.from}</Moment>
+                      </td>
                       <td>
-                        <button className='btn btn-danger'>Delete</button>
+                        <button
+                          onClick={() => deleteExperience(exp._id)}
+                          className='btn btn-danger'
+                        >
+                          <i className='far fa-trash-alt'></i> Delete
+                        </button>
                       </td>
                     </tr>
                   );
@@ -76,23 +81,28 @@ const Dashboard = ({
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Northern Essex</td>
-                <td className='hide-sm'>Associates</td>
-                <td className='hide-sm'>02-03-2007 - 01-02-2009</td>
-                <td>
-                  <button className='btn btn-danger'>Delete</button>
-                </td>
-              </tr>
+              {profile.education &&
+                profile.education.map((edu) => {
+                  return (
+                    <tr key={edu._id}>
+                      <td>{edu.school}</td>
+                      <td className='hide-sm'>{edu.degree}</td>
+                      <td className='hide-sm'>
+                        <Moment format='YYYY/MM/DD'>{edu.from}</Moment>
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => deleteEducation(edu._id)}
+                          className='btn btn-danger'
+                        >
+                          <i className='far fa-trash-alt'></i> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
-
-          <div className='my-2'>
-            <button className='btn btn-danger'>
-              <i className='fas fa-user-minus'></i>
-              Delete My Account
-            </button>
-          </div>
         </Fragment>
       ) : (
         <Fragment>
@@ -104,12 +114,20 @@ const Dashboard = ({
           </Link>
         </Fragment>
       )}
+      <div className='my-2'>
+        <button onClick={() => deleteProfile()} on className='btn btn-danger'>
+          <i className='fas fa-user-minus'></i> Delete My Account
+        </button>
+      </div>
     </Fragment>
   );
 };
 
 Dashboard.propTypes = {
   getCurrentProfile: PropTypes.func.isRequired,
+  deleteExperience: PropTypes.func.isRequired,
+  deleteEducation: PropTypes.func.isRequired,
+  deleteProfile: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired,
 };
@@ -119,4 +137,9 @@ const mapStateToProps = (state) => ({
   profile: state.profile,
 });
 
-export default connect(mapStateToProps, { getCurrentProfile })(Dashboard);
+export default connect(mapStateToProps, {
+  getCurrentProfile,
+  deleteExperience,
+  deleteEducation,
+  deleteProfile,
+})(Dashboard);
