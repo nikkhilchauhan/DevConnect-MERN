@@ -47,7 +47,7 @@ const Dashboard = ({
               </tr>
             </thead>
             <tbody>
-              {profile.experience &&
+              {profile &&
                 profile.experience.map((exp) => {
                   return (
                     <tr key={exp._id}>
@@ -81,7 +81,7 @@ const Dashboard = ({
               </tr>
             </thead>
             <tbody>
-              {profile.education &&
+              {profile &&
                 profile.education.map((edu) => {
                   return (
                     <tr key={edu._id}>
