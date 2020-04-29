@@ -23,7 +23,7 @@ const Dashboard = ({
   useEffect(() => {
     document.title = 'Devconnect | Dashboard';
     getCurrentProfile();
-  }, []);
+  }, [loading, getCurrentProfile]);
 
   return loading && profile === null ? (
     <Spinner />
