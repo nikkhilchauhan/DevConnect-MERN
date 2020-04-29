@@ -15,3 +15,5 @@ export const DELETE_EXP = 'CLEAR_PROFILE';
 export const ADD_EDU = 'ADD_EDU';
 export const DELETE_EDU = 'DELETE_EDU';
 export const DELETE_ACCOUNT = 'DELETE_ACCOUNT';
+export const GET_PROFILES = 'GET_PROFILES';
+export const GET_REPOS = 'GET_REPOS';

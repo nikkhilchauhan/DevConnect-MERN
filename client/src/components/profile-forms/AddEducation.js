@@ -109,7 +109,14 @@ const AddEducation = ({ addEducation, history }) => {
         {!current ? (
           <div className='form-group'>
             <h4>To Date</h4>
-            <input type='date' name='to' />
+            <input
+              onChange={(e) => {
+                onChange(e);
+              }}
+              value={to}
+              type='date'
+              name='to'
+            />
           </div>
         ) : null}
         <div className='form-group'>

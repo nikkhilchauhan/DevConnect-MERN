@@ -10,6 +10,8 @@ import {
   DELETE_EDU,
   CLEAR_PROFILE,
   DELETE_ACCOUNT,
+  GET_PROFILES,
+  GET_REPOS,
 } from './types';
 
 // GET current user profile
@@ -18,6 +20,57 @@ export const getCurrentProfile = () => async (dispatch) => {
     const res = await axios.get('/api/profile/me');
     dispatch({
       type: GET_PROFILE,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+// GET all profiles
+export const getProfiles = () => async (dispatch) => {
+  dispatch({
+    type: CLEAR_PROFILE,
+  });
+  try {
+    const res = await axios.get('/api/profile');
+    dispatch({
+      type: GET_PROFILES,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+// GET profile by Id
+export const getProfileById = (userId) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/profile/user/${userId}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: PROFILE_ERROR,
+      payload: { msg: err.response.statusText, status: err.response.status },
+    });
+  }
+};
+
+// GET github repos
+export const getGithubRepos = (username) => async (dispatch) => {
+  try {
+    const res = await axios.get(`/api/profile/github/${username}`);
+    dispatch({
+      type: GET_REPOS,
       payload: res.data,
     });
   } catch (err) {
@@ -121,7 +174,7 @@ export const addEducation = (formData, history) => async (dispatch) => {
 // DELETE EXPERIENCE
 export const deleteExperience = (expId) => async (dispatch) => {
   try {
-    const res = axios.delete(`/api/profile/experience/${expId}`);
+    const res = await axios.delete(`/api/profile/experience/${expId}`);
     dispatch({
       type: DELETE_EXP,
       payload: res.data,
@@ -138,7 +191,7 @@ export const deleteExperience = (expId) => async (dispatch) => {
 // DELETE EDUCATION
 export const deleteEducation = (eduId) => async (dispatch) => {
   try {
-    const res = axios.delete(`/api/profile/education/${eduId}`);
+    const res = await axios.delete(`/api/profile/education/${eduId}`);
     dispatch({
       type: DELETE_EDU,
       payload: res.data,
@@ -156,7 +209,7 @@ export const deleteEducation = (eduId) => async (dispatch) => {
 export const deleteProfile = () => async (dispatch) => {
   if (window.confirm("Are you sure?, This can't be undone")) {
     try {
-      const res = axios.delete(`/api/profile`);
+      await axios.delete(`/api/profile`);
       dispatch({
         type: CLEAR_PROFILE,
       });
